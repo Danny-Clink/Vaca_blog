@@ -40,24 +40,24 @@ Controller.user = function(req, res){
     upload(req, res =>{
     console.log(req.file);
     });
-    // upload(req, res, (err) => {
-    //     if (err){
-    //         console.log(err);
-    //     } else {
-    //         let sessionId = session.id;
-    //         let ImageName = req.file.filename;
-    //         connection.query(`UPDATE users SET Picture = ? WHERE ID = ?`,
-    //         ['/images/' + ImageName, sessionId],
-    //         (err) => {
-    //             if (err){
-    //                 console.log(err);
-    //             } else {
-    //                 console.log('picture inserted');
-    //                 console.log(ImageName);
-    //             }
-    //         });
-    //     }
-    // });
+    upload(req, res, (err) => {
+        if (err){
+            console.log(err);
+        } else {
+            let sessionId = session.id;
+            let ImageName = req.file.filename;
+            connection.query(`UPDATE users SET Picture = ? WHERE ID = ?`,
+            ['/images/' + ImageName, sessionId],
+            (err) => {
+                if (err){
+                    console.log(err);
+                } else {
+                    console.log('picture inserted');
+                    console.log(ImageName);
+                }
+            });
+        }
+    });
 };
 
 
