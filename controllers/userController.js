@@ -10,55 +10,15 @@ const connection = mysql.createConnection({
     database: 'f_p'
 });
 
-let imgName = function(){
-    let string = "";
-    let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-
-    for(var i = 0; i < 10; i++)                                                             //random name for picture which is uploading
-    string += letters.charAt(Math.floor(Math.random() * letters.length));
-
-    return string;
-};
-
-const storage = multer.diskStorage({
-    destination: 'D:/S_e_r_v_e_r/wamp64/wamp64/www/VacaBlog/public/images',
-    filename: function(req, file, cb){
-        cb(null, file.fieldname + '-'+ imgName() + path.extname(file.originalname));
-    }
-});
-const upload = multer({storage: storage}).single('image');
-
 let Controller = function(){};
 
-Controller.user = function(req, res){
+Controller.user = function(req, res, next){
     res.render('user',
     {
         userId: session.id,
         username: session.username,
         imageProfile: session.picture
     });
-    upload(req, res =>{
-    console.log(req.file);
-    });
-    upload(req, res, (err) => {
-        if (err){
-            console.log(err);
-        } else {
-            let sessionId = session.id;
-            let ImageName = req.file.filename;
-            connection.query(`UPDATE users SET Picture = ? WHERE ID = ?`,
-            ['/images/' + ImageName, sessionId],
-            (err) => {
-                if (err){
-                    console.log(err);
-                } else {
-                    console.log('picture inserted');
-                    console.log(ImageName);
-                }
-            });
-        }
-    });
 };
-
 
 module.exports = Controller;
