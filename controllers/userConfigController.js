@@ -6,7 +6,7 @@ const session = require('express-session');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'strangerthings',
     database: 'f_p'
 });
 
@@ -37,29 +37,21 @@ Controller.userConfig = function(req, res){
         username: session.username,
         imageProfile: session.picture
     });
-}
+};
 
 Controller.userConfig = function(req, res){
     let sessionId = session.id;
     let ImageName = req.file;
     upload(req, res, (err) => {
-        if (ImageName === undefined){};
-        if (err){
-            console.log(err);
-        } else {
-
+        if (err)throw err;
             connection.query(`UPDATE users SET Picture = ? WHERE ID = ?`,
             ['/images/' + ImageName, sessionId],
             (err) => {
-                if (err){
-                    console.log(err);
-                } else {
+                if (err) throw err;
                     console.log('picture inserted');
                     console.log(ImageName);
-                }
             });
-        }
-    });
+        });
 };
 
 module.exports = Controller;
