@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-'+ imgName() + path.extname(file.originalname));
     }
 });
-const upload = multer({storage: storage}).single('image');
+const upload = multer({storage: storage}).single('user_image');
 
 let Controller = function(){};
 
@@ -39,7 +39,7 @@ Controller.userConfig = function(req, res){
     });
 };
 
-Controller.userConfig = function(req, res){
+Controller.userUpdateImage = function(req, res){
     let sessionId = session.id;
     let ImageName = req.file;
     upload(req, res, (err) => {
@@ -50,6 +50,7 @@ Controller.userConfig = function(req, res){
                 if (err) throw err;
                     console.log('picture inserted');
                     console.log(ImageName);
+                    res.redirect('config');
             });
         });
 };
