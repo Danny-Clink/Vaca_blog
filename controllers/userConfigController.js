@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const multer = require('multer');
 const path = require('path');
 const session = require('express-session');
+const fs = require('fs');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -21,11 +22,12 @@ let imgName = function(){
 };
 
 const storage = multer.diskStorage({
-    destination: 'D:/S_e_r_v_e_r/wamp64/wamp64/www/VacaBlog/public/images',
-    filename: function(req, file, cb){
+    destination: 'D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/images',
+    filename:  function(req, file, cb){
         cb(null, file.fieldname + '-'+ imgName() + path.extname(file.originalname));
     }
 });
+
 const upload = multer({storage: storage}).single('user_image');
 
 let Controller = function(){};
@@ -40,16 +42,20 @@ Controller.userConfig = function(req, res){
 };
 
 Controller.userUpdateImage = function(req, res){
-    let sessionId = session.id;
-    let ImageName = req.file;
     upload(req, res, (err) => {
+    let sessionId = session.id;
+    let ImageName = req.file.filename;
         if (err)throw err;
             connection.query(`UPDATE users SET Picture = ? WHERE ID = ?`,
             ['/images/' + ImageName, sessionId],
             (err) => {
                 if (err) throw err;
-                    console.log('picture inserted');
-                    console.log(ImageName);
+                    console.log('picture inserted:' + ImageName);
+                    fs.unlink('D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/' + session.picture, (err) => {
+                        if (err) throw err;
+                        console.log('Old picture deleted');
+                    });
+                    session.picture = "/images/" + ImageName;
                     res.redirect('config');
             });
         });
