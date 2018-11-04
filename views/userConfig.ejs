@@ -7,10 +7,11 @@
     <body>
             <center> <div class="container">
                 <h1>COnfiguration of <%= username %></h1>
+                <a class="btn btn-primary" href="/user/<%= userId %>">On page</a><br>
                 <img src="<%= imageProfile %>" height="500px" width="250px">
-                <form action="/user/<%= userId %>" enctype="multipart/form-data"  method="POST">
+                <form action="/user/<%= userId %>/config" method="POST" enctype="multipart/form-data">
                     Upload new photo:<br>
-                    Image:<input type="file" name="image">
+                    Image:<input type="file" name="user_image">
                     <button type="submit" class="btn btn-primary">Upload</button>
                 </form>
             </div></center>

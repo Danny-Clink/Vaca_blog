@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 const indexController = require('../controllers/indexController');
 
 
 router.get('/', indexController.index);
-router.post('/', indexController.index);
+router.post('/', indexController.checkAuth);
 
 
 module.exports = router;

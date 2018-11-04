@@ -1,20 +1,19 @@
-var createError = require('http-errors');
-var express = require('express');
-var session = require('express-session');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var userRouter = require('./routes/user');
-var registerRouter = require('./routes/register');
-var mainRouter = require('./routes/main');
-var userConfigRouter = require('./routes/userConfig')
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/user');
+const registerRouter = require('./routes/register');
+const mainRouter = require('./routes/main');
+const userConfigRouter = require('./routes/userConfig')
+const chatRouter = require('./routes/chat');
+const userFriends = require('./routes/userFriends');
 
-var app = express();
-
-// set storage engine
-
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,7 +31,10 @@ app.use('/main', mainRouter);
 app.use('/index', indexRouter);
 app.use('/user/:id', userRouter);
 app.use('/user/:id/config', userConfigRouter);
+app.use('/user/:id/chat', chatRouter);
+app.use('/user/:id/friends', userFriends);
 app.use('/register', registerRouter);
+
 
 
 // catch 404 and forward to error handler
@@ -50,5 +52,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// app.listen(3000);
 
 module.exports = app;
