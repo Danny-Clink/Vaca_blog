@@ -11,25 +11,6 @@ const connection = mysql.createConnection({
     database: 'f_p'
 });
 
-let imgName = function(){
-    let string = "";
-    let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-
-    for(var i = 0; i < 10; i++)                                                             //random name for picture which is uploading
-    string += letters.charAt(Math.floor(Math.random() * letters.length));
-
-    return string;
-};
-
-const storage = multer.diskStorage({
-    destination: 'D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/images',
-    filename:  function(req, file, cb){
-        cb(null, file.fieldname + '-'+ imgName() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({storage: storage}).single('user_image');
-
 let Controller = function(){};
 
 Controller.userConfig = function(req, res){
@@ -42,20 +23,42 @@ Controller.userConfig = function(req, res){
 };
 
 Controller.userUpdateImage = function(req, res){
+    let imgName = function(){
+        let string = "";
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+
+        for(var i = 0; i < 10; i++)                                                             //random name for picture which is uploading
+        string += letters.charAt(Math.floor(Math.random() * letters.length));
+
+    return string;
+};
+
+    const storage = multer.diskStorage({
+        destination: 'D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/images/'+ session.username,
+        filename:  function(req, file, cb){
+            cb(null, file.fieldname + '-' + imgName() + path.extname(file.originalname));
+        }
+    });
+
+    const upload = multer({storage: storage}).single('user_image');
+
+
     upload(req, res, (err) => {
     let sessionId = session.id;
     let ImageName = req.file.filename;
+    let imageUrl = '/images/' + session.username + '/' + ImageName;
+
         if (err)throw err;
             connection.query(`UPDATE users SET Picture = ? WHERE ID = ?`,
-            ['/images/' + ImageName, sessionId],
+            [imageUrl, sessionId],
             (err) => {
                 if (err) throw err;
-                    console.log('picture inserted:' + ImageName);
-                    fs.unlink('D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/' + session.picture, (err) => {
+                    console.log('Picture inserted:' + ImageName);
+                    fs.unlink('D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/'  + session.picture, (err) => {
                         if (err) throw err;
                         console.log('Old picture deleted');
                     });
-                    session.picture = "/images/" + ImageName;
+                    session.picture = imageUrl;
                     res.redirect('config');
             });
         });

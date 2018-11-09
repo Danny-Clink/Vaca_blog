@@ -6,8 +6,11 @@ const connection = mysql.createConnection({
     database: 'f_p',
 });
 
-let mongoClient = require('mongodb').MongoClient;
-let url = 'mongodb://localhost:27017/database';
+const mongoClient = require('mongodb').MongoClient;
+const url = 'mongodb://localhost:27017/database';
+
+const mkdir = require('mkdirp');
+const fs = require('fs');
 
 let Controller = function(){};
 
@@ -17,7 +20,7 @@ Controller.index = function(req, res, next){
 
 Controller.register = function(req, res, next){
     if (req.body.password === req.body.confirm){
-        connection.query(`INSERT INTO users (Name, Username, Email, Password, Picture) VALUES(?, ?, ?, ?, "/images/user_no_photo.png")`,
+        connection.query(`INSERT INTO users (Name, Username, Email, Password, Picture) VALUES(?, ?, ?, ?, "")`,
     [
         req.body.name,
         req.body.username,
@@ -32,10 +35,19 @@ Controller.register = function(req, res, next){
             console.log('succsess insert - MySQL');
             res.redirect('/register');
             }
-        });
+    });
     } else {
-    res.send('password is not confirm');
-    };
+        res.send('password is not confirm');
+        };
+
+        connection.query(`UPDATE users SET Picture = ? WHERE Username = ?`,
+        [
+            '/images/' + req.body.username + '/no-photo.png',
+            req.body.username
+        ]),
+        (err) => {
+            if (err) throw err;
+        }
 
     mongoClient.connect(url, {useNewUrlParser: true}, function(err, db) {
         if (err) throw err;
@@ -49,6 +61,18 @@ Controller.register = function(req, res, next){
                 db.close();
             });
     });
+
+    mkdir('./public/images/' + req.body.username, function(err) {
+        if (err) throw err;
+    });
+
+    fs.readFile('./public/images/new_user/no-photo.png', function(err, data) {
+        if (err) throw err;
+        fs.writeFile('./public/images/' + req.body.username + '/' + 'no-photo.png', data, function(err) {
+            if (err) throw err;
+        });
+    });
+
 };
 
 module.exports = Controller;

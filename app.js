@@ -11,7 +11,8 @@ const registerRouter = require('./routes/register');
 const mainRouter = require('./routes/main');
 const userConfigRouter = require('./routes/userConfig')
 const chatRouter = require('./routes/chat');
-const userFriends = require('./routes/userFriends');
+const userFriendsRouter = require('./routes/userFriends');
+const userPhotoRouter = require('./routes/userPhoto');
 
 const app = express();
 
@@ -32,7 +33,8 @@ app.use('/index', indexRouter);
 app.use('/user/:id', userRouter);
 app.use('/user/:id/config', userConfigRouter);
 app.use('/user/:id/chat', chatRouter);
-app.use('/user/:id/friends', userFriends);
+app.use('/user/:id/friends', userFriendsRouter);
+app.use('/user/:id/photo', userPhotoRouter);
 app.use('/register', registerRouter);
 
 
