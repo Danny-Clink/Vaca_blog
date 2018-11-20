@@ -33,7 +33,7 @@ Controller.checkAuth = function(req, res, next){
                             session.fullName = result[0].Name;
                             session.picture = result[0].Picture;
                             session.username = username;
-                            res.redirect('/user/' + result[0].ID);
+                            res.redirect('/user' + result[0].ID);
                     });
                 } else {
                     console.log('user is not founded');

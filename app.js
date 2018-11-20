@@ -13,6 +13,7 @@ const userConfigRouter = require('./routes/userConfig')
 const chatRouter = require('./routes/chat');
 const userFriendsRouter = require('./routes/userFriends');
 const userPhotoRouter = require('./routes/userPhoto');
+const userRenderRouter = require('./routes/userRender');
 
 const app = express();
 
@@ -30,11 +31,12 @@ app.use(session({secret: 'dovakin', resave: false, saveUninitialized: true}));
 app.use('/', mainRouter);
 app.use('/main', mainRouter);
 app.use('/index', indexRouter);
-app.use('/user/:id', userRouter);
-app.use('/user/:id/config', userConfigRouter);
-app.use('/user/:id/chat', chatRouter);
-app.use('/user/:id/friends', userFriendsRouter);
-app.use('/user/:id/photo', userPhotoRouter);
+app.use('/user:id', userRouter);
+app.use('/user:id/config', userConfigRouter);
+app.use('/user:id/chat', chatRouter);
+app.use('/user:id/friends', userFriendsRouter);
+app.use('/user:id/photo', userPhotoRouter);
+app.use('/touser:id', userRenderRouter);
 app.use('/register', registerRouter);
 
 

@@ -45,7 +45,7 @@ Controller.uploadPhoto = function (req, res) {
 };
 
     const storage = multer.diskStorage({
-        destination: 'D:/S_e_r_v_e_r/wamp64/wamp64/www/Vaca_blog/public/images/'+ session.username,
+        destination: 'D:/Server/wamp64/wamp64/www/Vaca_blog/public/images/'+ session.username,
         filename:  function(req, file, cb){
             cb(null, file.fieldname + '-' + imgName() + path.extname(file.originalname));
         }
