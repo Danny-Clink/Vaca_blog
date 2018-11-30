@@ -8,28 +8,28 @@ const Controller = function(){};
 let listenersList = [];
 
 Controller.chat = function(req, res) {
-    res.render('chat')
-}
+	res.render('chat');
+};
 
 
 server.on('connection', ws => {
-    let fullName = session.fullName;
-    ws.on('message', message => {
-        server.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                if (message === '/listeners'){
-                    client.send('listeners:<br>' + listenersList);
-                }
-                else{
-                    client.send(fullName + ":" + message);
-                }
-            }
-        })
-    });
+	let fullName = session.fullName;
+	ws.on('message', message => {
+		server.clients.forEach(client => {
+			if (client.readyState === WebSocket.OPEN) {
+				if (message === '/listeners'){
+					client.send('listeners:<br>' + listenersList);
+				}
+				else{
+					client.send(fullName + ':' + message);
+				}
+			}
+		});
+	});
 
-    ws.send('You login as ' + fullName);
+	ws.send('You login as ' + fullName);
 
-    listenersList.push(fullName);
-})
+	listenersList.push(fullName);
+});
 
 module.exports = Controller;

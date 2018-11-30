@@ -31,5 +31,8 @@
     "session": "^0.1.0",
     "wait.for": "^0.6.6",
     "ws": "^6.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0"
   }
 }

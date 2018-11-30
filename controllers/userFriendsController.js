@@ -39,7 +39,7 @@ Controller.findUserFriends = function(req, res) {
     return new Promise(async function(resolve, reject){
         let dbo = await _connect();
 
-        dbo.collection('users').findOne({name: session.fullName},
+        dbo.collection('Vaca_blog.users').findOne({name: session.fullName},
         function(err, result) {
             if (err) throw reject;
 
@@ -59,7 +59,7 @@ Controller.displayUserFriends = function(req, res) {
             if (err) throw reject;
 
             console.log("SQL: " + result[0].Name + ' ' + result[0].Picture);
-            postUser.push(result[0].Name, result[0].Picture);
+            postUser.push(result[0].ID, result[0].Name, result[0].Picture);
 
             if (i === friendsId.length - 1) {
                 resolve(postUser);

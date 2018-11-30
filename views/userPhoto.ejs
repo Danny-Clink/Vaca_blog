@@ -5,6 +5,7 @@
     <title>Photo</title>
 </head>
 <body>
+        <a class="btn btn-primary" href="/user<%= userId %>">On page</a><br>
     <form action="/user<%= userId %>/photo" method="POST" enctype="multipart/form-data">
         Upload new photo:<br>
         Image:<input type="file" name="gallery_image">

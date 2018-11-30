@@ -4,6 +4,18 @@ const path = require('path');
 const mongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/database';
 
+const _connect = function(){
+    return new Promise(function(resolve, reject){
+        mongoClient.connect(url, {useNewUrlParser: true},
+            function(err, db){
+                if (err) throw reject;
+
+                let dbObj = db.db('Vaca_blog');
+                resolve(dbObj);
+            })
+    })
+}
+
 let Controller = function(){};
 
 Controller.userPhoto = async function(req, res){
@@ -17,19 +29,16 @@ Controller.userPhoto = async function(req, res){
 };
 
 Controller.getPhoto = function(){
-    return new Promise(function(resolve, reject) {
-    mongoClient.connect(url, {useNewUrlParser: true}, function(err, db) {
-        if (err) throw err;
+    return new Promise(async function(resolve, reject) {
 
-        let dbo = db.db('Vaca_blog');
+        let dbo = await _connect();
 
-        dbo.collection('users').findOne({name: session.fullName}, function(err, result) {
+        dbo.collection('Vaca_blog.users').findOne({name: session.fullName}, function(err, result) {
             if (err) throw reject;
 
             console.log(result.photos);
             resolve(result.photos);
         });
-    });
 });
 }
 
@@ -45,7 +54,7 @@ Controller.uploadPhoto = function (req, res) {
 };
 
     const storage = multer.diskStorage({
-        destination: 'D:/Server/wamp64/wamp64/www/Vaca_blog/public/images/'+ session.username,
+        destination: 'D:/Server/wamp64/www/Vaca_blog/public/images/'+ session.username,
         filename:  function(req, file, cb){
             cb(null, file.fieldname + '-' + imgName() + path.extname(file.originalname));
         }
@@ -61,7 +70,7 @@ Controller.uploadPhoto = function (req, res) {
             let dbo = db.db('Vaca_blog');
 
             let imageUrl = '/images/' + session.username + '/' + req.file.filename;
-            dbo.collection('users').updateOne({name: session.fullName}, { $push: {photos: imageUrl}}, function(err) {
+            dbo.collection('Vaca_blog.users').updateOne({name: session.fullName}, { $push: {photos: imageUrl}}, function(err) {
                 if (err) throw err;
                 console.log("Uploaded");
             });

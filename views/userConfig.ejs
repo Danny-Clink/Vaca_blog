@@ -7,7 +7,7 @@
     <body>
             <center> <div class="container">
                 <h1>COnfiguration of <%= username %></h1>
-                <a class="btn btn-primary" href="/user/<%= userId %>">On page</a><br>
+                <a class="btn btn-primary" href="/user<%= userId %>">On page</a><br>
                 <img src="<%= imageProfile %>" height="500px" width="250px">
                 <form action="/user<%= userId %>/config" method="POST" enctype="multipart/form-data">
                     Upload new photo:<br>
