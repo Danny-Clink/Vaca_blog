@@ -5,79 +5,78 @@ const mongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/database';
 
 const _connect = function(){
-    return new Promise(function(resolve, reject){
-        mongoClient.connect(url, {useNewUrlParser: true},
-            function(err, db){
-                if (err) throw reject;
+	return new Promise(function(resolve, reject){
+		mongoClient.connect(url, {useNewUrlParser: true},
+			function(err, db){
+				if (err) throw reject;
 
-                let dbObj = db.db('Vaca_blog');
-                resolve(dbObj);
-            })
-    })
-}
+				const dbObj = db.db('Vaca_blog');
+				resolve(dbObj);
+			});
+	});
+};
 
-let Controller = function(){};
+const Controller = function(){};
 
 Controller.userPhoto = async function(req, res){
-    const photos = await Controller.getPhoto();
+	const photos = await Controller.getPhoto();
 
-    res.render('userPhoto',
-    {
-        userId: session.id,
-        galleryPhotos: photos
-    });
+	res.render('userPhoto',
+		{
+			userId: session.id,
+			galleryPhotos: photos
+		});
 };
 
 Controller.getPhoto = function(){
-    return new Promise(async function(resolve, reject) {
+	return new Promise(async function(resolve, reject) {
 
-        let dbo = await _connect();
+		const dbo = await _connect();
 
-        dbo.collection('Vaca_blog.users').findOne({name: session.fullName}, function(err, result) {
-            if (err) throw reject;
+		dbo.collection('Vaca_blog.users').findOne({username: session.username[0]}, function(err, result) {
+			if (err) throw reject;
 
-            console.log(result.photos);
-            resolve(result.photos);
-        });
-});
-}
-
-Controller.uploadPhoto = function (req, res) {
-    let imgName = function(){
-        let string = "";
-        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-
-        for(var i = 0; i < 10; i++)                                                             //random name for picture which is uploading
-        string += letters.charAt(Math.floor(Math.random() * letters.length));
-
-    return string;
+			resolve(result.photos);
+		});
+	});
 };
 
-    const storage = multer.diskStorage({
-        destination: 'D:/Server/wamp64/www/Vaca_blog/public/images/'+ session.username,
-        filename:  function(req, file, cb){
-            cb(null, file.fieldname + '-' + imgName() + path.extname(file.originalname));
-        }
-    });
+Controller.uploadPhoto = function (req, res) {
+	const imgName = function(){
+		let string = '';
+		let letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
-    const upload = multer({storage: storage}).single('gallery_image');
+		for(var i = 0; i < 10; i++)                                                             //random name for picture which is uploading
+			string += letters.charAt(Math.floor(Math.random() * letters.length));
 
-    upload(req, res, (err) => {
-        if (err) throw err;
-        mongoClient.connect(url, {useNewUrlParser: true}, function(err, db){
-            if (err) throw err;
+		return string;
+	};
 
-            let dbo = db.db('Vaca_blog');
+	const storage = multer.diskStorage({
+		destination: 'D:/Server/wamp64/www/Vaca_blog/public/images/'+ session.username,
+		filename:  function(req, file, cb){
+			cb(null, file.fieldname + '-' + imgName() + path.extname(file.originalname));
+		}
+	});
 
-            let imageUrl = '/images/' + session.username + '/' + req.file.filename;
-            dbo.collection('Vaca_blog.users').updateOne({name: session.fullName}, { $push: {photos: imageUrl}}, function(err) {
-                if (err) throw err;
-                console.log("Uploaded");
-            });
+	const upload = multer({storage: storage}).single('gallery_image');
 
-            res.redirect('photo');
-        });
-    });
-}
+	upload(req, res, (err) => {
+		if (err) throw err;
+		mongoClient.connect(url, {useNewUrlParser: true}, function(err, db){
+			if (err) throw err;
+
+			const dbo = db.db('Vaca_blog');
+
+			const imageUrl = '/images/' + session.username + '/' + req.file.filename;
+			dbo.collection('Vaca_blog.users').updateOne({username: session.username}, { $push: {photos: imageUrl}}, function(err) {
+				if (err) throw err;
+				console.log('Uploaded');
+			});
+
+			res.redirect('photo');
+		});
+	});
+};
 
 module.exports = Controller;

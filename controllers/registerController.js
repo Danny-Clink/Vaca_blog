@@ -19,18 +19,17 @@ Controller.index = function(req, res){
 };
 
 Controller.register = function(req, res){
-	if (req.body.password === req.body.confirm){
+	let name = req.body.name;
+	let username = req.body.username;
+	let password = req.body.password;
+	let confirmPassword = req.body.confirm;
+	let email = req.body.email;
+
+	if (password === confirmPassword){
 		connection.query('INSERT INTO users (Name, Username, Email, Password, Picture) VALUES(?, ?, ?, ?, "")',
-			[
-				req.body.name,
-				req.body.username,
-				req.body.email,
-				req.body.password
-			],
-			(err) => {
+			[name, username, email, password], (err) => {
 				if(err){
-					console.log(err);
-					res.redirect(301, '/error');
+					throw err;
 				} else{
 					console.log('succsess insert - MySQL');
 					res.redirect('/register');
@@ -41,11 +40,7 @@ Controller.register = function(req, res){
 	}
 
 	connection.query('UPDATE users SET Picture = ? WHERE Username = ?',
-		[
-			'/images/' + req.body.username + '/no-photo.png',
-			req.body.username
-		]),
-	(err) => {
+		['/images/' + username + '/no-photo.png', username]), (err) => {
 		if (err) throw err;
 	};
 
@@ -53,7 +48,7 @@ Controller.register = function(req, res){
 		if (err) throw err;
 
 		let dbo = db.db('Vaca_blog');
-		let profile = {name: req.body.name, friends: [], photos: []};
+		let profile = {name: name, username: username, friends: [], photos: [], posts: []};
 		dbo.collection('users').insertOne(profile,
 			function(err) {
 				if(err) throw err;
@@ -62,13 +57,13 @@ Controller.register = function(req, res){
 			});
 	});
 
-	mkdir('./public/images/' + req.body.username, function(err) {
+	mkdir('./public/images/' + username, function(err) {
 		if (err) throw err;
 	});
 
 	fs.readFile('./public/images/new_user/no-photo.png', function(err, data) {
 		if (err) throw err;
-		fs.writeFile('./public/images/' + req.body.username + '/' + 'no-photo.png', data, function(err) {
+		fs.writeFile('./public/images/' + username + '/' + 'no-photo.png', data, function(err) {
 			if (err) throw err;
 		});
 	});

@@ -3,70 +3,70 @@ const mongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/database';
 const mysql = require('mysql');
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'strangerthings',
-    database: 'f_p',
+	host: 'localhost',
+	user: 'root',
+	password: 'strangerthings',
+	database: 'f_p',
 });
 
 const _connect = function(){
-    return new Promise(function(resolve, reject){
-        mongoClient.connect(url, {useNewUrlParser: true},
-            function(err, db){
-                if (err) throw reject;
+	return new Promise(function(resolve, reject){
+		mongoClient.connect(url, {useNewUrlParser: true},
+			function(err, db){
+				if (err) throw reject;
 
-                let dbObj = db.db('Vaca_blog');
-                resolve(dbObj);
-            })
-    })
-}
+				const dbObj = db.db('Vaca_blog');
+				resolve(dbObj);
+			});
+	});
+};
 
-let Controller = function(){};
+const Controller = function(){};
 
 Controller.userFriends = async function(req, res){
-    const friends = await Controller.findUserFriends();
-    const findFriends = await Controller.displayUserFriends();
+	const friends = await Controller.findUserFriends();
+	const findFriends = await Controller.displayUserFriends();
 
-    res.render('userFriends', {
-        fullname: session.fullName,
-        userId: session.id,
-        friends: friends,
-        findFriends: findFriends
-    });
+	res.render('userFriends', {
+		fullname: session.fullName,
+		userId: session.id,
+		friends: friends,
+		findFriends: findFriends
+	});
 };
 
-Controller.findUserFriends = function(req, res) {
-    return new Promise(async function(resolve, reject){
-        let dbo = await _connect();
+Controller.findUserFriends = function() {
+	return new Promise(async function(resolve, reject){
+		const dbo = await _connect();
 
-        dbo.collection('Vaca_blog.users').findOne({name: session.fullName},
-        function(err, result) {
-            if (err) throw reject;
+		dbo.collection('Vaca_blog.users').findOne({name: session.fullName},
+			function(err, result) {
+				if (err) throw reject;
 
-            console.log("mongo: " + result.friends);
-            resolve(result.friends);
-        });
-});
+				console.log('mongo: ' + result.friends);
+				resolve(result.friends);
+			});
+	});
 };
 
-Controller.displayUserFriends = function(req, res) {
-    return new Promise(async function(resolve, reject){
-        let friendsId = await Controller.findUserFriends();
-        let postUser = [];
+Controller.displayUserFriends = function() {
+	return new Promise(async function(resolve, reject){
+		const friendsId = await Controller.findUserFriends();
+		let postUser = [];
 
-        for(let i = 0; i < friendsId.length; i++) {
-        connection.query(`SELECT* FROM users WHERE ID = ?`, [friendsId[i]], (err, result) => {
-            if (err) throw reject;
+		for(let i = 0; i < friendsId.length; i++) {
+			connection.query('SELECT* FROM users WHERE ID = ?', [friendsId[i]], (err, result) => {
+				if (err) throw reject;
 
-            console.log("SQL: " + result[0].Name + ' ' + result[0].Picture);
-            postUser.push(result[0].ID, result[0].Name, result[0].Picture);
+				console.log('SQL: ' + result[0].Name + ' ' + result[0].Picture);
+				postUser.push(result[0].ID, result[0].Name, result[0].Picture);
 
-            if (i === friendsId.length - 1) {
-                resolve(postUser);
-            }
-        })
-        }
-    })
-}
+				if (i === friendsId.length - 1) {
+					resolve(postUser);
+				}
+			});
+		}
+	});
+};
 
 module.exports = Controller;

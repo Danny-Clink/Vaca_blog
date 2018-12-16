@@ -53,11 +53,11 @@ Controller.userUpdateImage = function(req, res){
 			[imageUrl, sessionId],
 			(err) => {
 				if (err) throw err;
-				// eslint-disable-next-line no-console
+
 				console.log('Picture inserted:' + ImageName);
 				fs.unlink('D:/Server/wamp64/www/Vaca_blog/public/'  + session.picture, (err) => {
 					if (err) throw err;
-					// eslint-disable-next-line no-console
+
 					console.log('Old picture deleted');
 				});
 				session.picture = imageUrl;
